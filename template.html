@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Risk Appetite Scenario Tool · DSI433 Group 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1F5E8C; --navy-d:#163F5E; --sky:#38A9D1; --sky-l:#E8F4FA;
+  --ink:#122133; --muted:#5D6D7E; --line:#E4EAF0; --bg:#F3F6F9; --card:#FFFFFF;
+  --pass:#1E8E5A; --pass-l:#E3F4EB; --fail:#C8473B; --fail-l:#FBEAE7; --idle:#CBD5DF;
+  --head:'Prompt','Sarabun','Segoe UI','Leelawadee UI',sans-serif;
+  --body:'Sarabun','Segoe UI','Leelawadee UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+/* ---------- app bar */
+.bar{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,var(--navy-d),var(--navy));color:#fff;
+  display:flex;align-items:center;justify-content:space-between;padding:14px 36px;box-shadow:0 2px 14px rgba(18,33,51,.18)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.brand b{font-family:var(--head);font-size:18px;letter-spacing:.2px}
+.brand span{display:block;font-size:12.5px;opacity:.75;margin-top:1px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:12.5px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}
+/* ---------- layout */
+main{max-width:1280px;margin:0 auto;padding:34px 36px 40px}
+.kicker{font-family:var(--head);font-size:12.5px;font-weight:600;letter-spacing:.16em;color:var(--sky)}
+h1{font-family:var(--head);font-size:34px;font-weight:700;margin:0 0 6px;letter-spacing:-.2px}
+.lead{color:var(--muted);font-size:16px;line-height:1.65;max-width:860px}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:24px;margin-top:26px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 4px 18px rgba(18,33,51,.05)}
+/* ---------- control panel */
+.panel{padding:26px 26px 24px;display:flex;flex-direction:column;gap:22px}
+.lbl{font-size:13.5px;color:var(--muted);font-weight:500}
+.big{font-family:var(--head);font-size:52px;font-weight:700;line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums}
+.big small{font-size:22px;color:var(--muted);font-weight:600;margin-left:4px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:999px;outline:none;margin-top:14px;
+  background:linear-gradient(90deg,var(--navy) var(--p,28%),#E3E9EF var(--p,28%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid var(--navy);
+  box-shadow:0 2px 8px rgba(31,94,140,.35);cursor:pointer;transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.12)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid var(--navy);cursor:pointer}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+.preset{font-family:var(--body);font-size:13.5px;font-weight:600;color:var(--navy);background:var(--sky-l);border:1px solid transparent;
+  padding:7px 13px;border-radius:999px;cursor:pointer;transition:all .15s}
+.preset:hover{border-color:var(--navy)}
+.preset.on{background:var(--navy);color:#fff}
+.sep{height:1px;background:var(--line)}
+.ringwrap{display:flex;align-items:center;gap:18px}
+.ring{position:relative;width:104px;height:104px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .c b{font-family:var(--head);font-size:28px;color:var(--navy);line-height:1}
+.ring .c span{font-size:11.5px;color:var(--muted)}
+.ringtxt b{font-family:var(--head);font-size:17px;display:block;margin-bottom:2px}
+.ringtxt p{font-size:13.5px;color:var(--muted);line-height:1.5}
+.legend{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:26px;height:9px;border-radius:5px;vertical-align:middle;margin-right:8px}
+.legend i.d{width:0;height:15px;border-left:2px dashed var(--ink);border-radius:0;margin:0 20px 0 12px}
+/* ---------- structures */
+.list{padding:8px 26px}
+.listhead{display:grid;grid-template-columns:250px 1fr 120px;gap:20px;padding:16px 0 10px;border-bottom:1px solid var(--line);
+  font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.item{display:grid;grid-template-columns:250px 1fr 120px;gap:20px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);transition:background .25s}
+.item:last-child{border-bottom:none}
+.nm{font-family:var(--head);font-size:16.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+.tag{font-family:var(--body);font-size:11px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:6px;background:#EEF2F6;color:var(--muted)}
+.tag.x{background:var(--sky-l);color:var(--navy)}
+.tag.q{background:#FDF1E4;color:#B4651F}
+.sub{font-size:13.5px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+.track{position:relative;height:14px;background:#EEF2F6;border-radius:999px}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--idle);transition:width .6s cubic-bezier(.2,.8,.2,1),background .35s}
+.item.ok .fill{background:linear-gradient(90deg,#2BA36B,var(--pass))}
+.mark{position:absolute;top:-9px;bottom:-9px;width:0;border-left:2px dashed var(--ink);transition:left .45s cubic-bezier(.2,.8,.2,1)}
+.room{font-size:12.5px;margin-top:8px;font-variant-numeric:tabular-nums}
+.item.ok .room{color:var(--pass)} .item:not(.ok) .room{color:var(--fail)}
+.badge{justify-self:end;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;
+  background:var(--fail-l);color:var(--fail);transition:all .3s;min-width:96px;justify-content:center}
+.item.ok .badge{background:var(--pass-l);color:var(--pass)}
+/* ---------- recommendation */
+.reco{margin-top:24px;border-radius:18px;padding:22px 26px;color:#fff;display:flex;gap:18px;align-items:center;
+  background:linear-gradient(110deg,var(--navy-d),var(--navy) 60%,#2A7CB0)}
+.reco .ic{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center;flex:none}
+.reco small{display:block;font-size:12px;letter-spacing:.12em;opacity:.75;font-weight:600}
+.reco p{font-size:17px;line-height:1.55;margin-top:3px}
+.reco b{color:#FAD27A}
+footer{margin-top:22px;font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (max-width:980px){.grid{grid-template-columns:1fr}.listhead{display:none}.item{grid-template-columns:1fr;gap:10px}.badge{justify-self:start}.bar{padding:12px 18px}main{padding:24px 18px}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="brand">
+    <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M2 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 20c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M12 3l5 6H7z" fill="#fff" stroke="none" opacity=".9"/></svg></div>
+    <div><b>FloodCAT · Reinsurance Decision Support</b><span>Thailand Flood Catastrophe Risk Model</span></div>
+  </div>
+  <div class="chips"><span class="chip">Monte Carlo 100,000 ปี</span></div>
+</header>
+
+<main>
+  <h1>Risk Appetite Scenario Tool</h1>
+  <p class="lead">กำหนดความเสียหายปีเลวร้ายสูงสุด (Net PML250) ที่บริษัทยอมรับได้ แล้วดูว่าโครงสร้าง Reinsurance ใดผ่านเกณฑ์ · พอร์ตประกันภัยสมมติ: ส่วนแบ่งทรัพย์สิน 1% · สัดส่วนการจ่ายสินไหม 80%</p>
+
+  <section class="grid">
+    <div class="card panel">
+      <div>
+        <div class="lbl">Maximum Acceptable Net PML250</div>
+        <div class="big" id="big">$1,200<small>M</small></div>
+        <input type="range" id="rng" min="800" max="2200" step="50" value="1200" aria-label="Maximum acceptable Net PML250 (USD million)">
+        <div class="scale"><span>$800M</span><span>$1,500M</span><span>$2,200M</span></div>
+      </div>
+      <div class="presets" id="presets"></div>
+      <div class="sep"></div>
+      <div class="ringwrap">
+        <div class="ring">
+          <svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="44" fill="none" stroke="#EEF2F6" stroke-width="11"/>
+            <circle id="arc" cx="52" cy="52" r="44" fill="none" stroke="#1F5E8C" stroke-width="11" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5" style="transition:stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)"/></svg>
+          <div class="c"><div><b id="cnt">1/5</b><br><span>Eligible</span></div></div>
+        </div>
+        <div class="ringtxt"><b>Eligible Structures</b><p id="ringp">โครงสร้างที่ Net PML250 ไม่เกินระดับที่ยอมรับได้</p></div>
+      </div>
+      <div class="legend">
+        <div><i style="background:#1E8E5A"></i>ผ่านเกณฑ์</div>
+        <div><i style="background:#CBD5DF"></i>ไม่ผ่านเกณฑ์</div>
+        <div><i class="d"></i>ระดับที่ยอมรับได้</div>
+      </div>
+    </div>
+
+    <div class="card list">
+      <div class="listhead"><div>Structure</div><div>Net PML250 vs Risk Appetite</div><div style="text-align:right">Status</div></div>
+      <div id="items"></div>
+    </div>
+  </section>
+
+  <div class="reco">
+    <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FAD27A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 16.6 6.5 19.5l1-6.3L3 8.9 9 8z"/></svg></div>
+    <div><small>RECOMMENDATION</small><p id="reco"></p></div>
+  </div>
+
+  <footer><span>ความเสียหายทางเศรษฐกิจจากแบบจำลองภายใต้สมมติฐาน · ยังไม่รวมเบี้ยประกันภัยต่อ</span><span>ที่มา: DSI433_Full_CAT_Modeling.ipynb (SEED 433)</span></footer>
+</main>
+
+<script>
+// Results from DSI433_Full_CAT_Modeling.ipynb, section 11 (USD million)
+const S = __DATA__;
+const MIN=800, MAX=2200, VMAX=2250, PRE=[1000,1200,1500,1800,2000];
+const $ = id => document.getElementById(id);
+const fmt = v => v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt0 = v => Math.round(v).toLocaleString('en-US');
+
+$('items').innerHTML = S.map((s,i)=>`
+  <div class="item" id="it${i}">
+    <div><div class="nm">${s.n}<span class="tag ${s.c}">${s.t}</span></div>
+      <div class="sub">Net PML250 <b style="color:#122133">$${fmt(s.pml)}M</b><br>Net AAL $${fmt(s.aal)}M</div></div>
+    <div><div class="track"><div class="fill" style="width:${s.pml/VMAX*100}%"></div><div class="mark"></div></div><div class="room"></div></div>
+    <span class="badge"></span>
+  </div>`).join('');
+$('presets').innerHTML = PRE.map(v=>`<button class="preset" data-v="${v}">$${fmt0(v)}M</button>`).join('');
+
+let shown = 1200, raf;
+function tween(to){
+  cancelAnimationFrame(raf); const from = shown, t0 = performance.now();
+  const step = now => { const k = Math.min(1,(now-t0)/350), e = 1-Math.pow(1-k,3);
+    shown = from + (to-from)*e; $('big').innerHTML = '$'+fmt0(shown)+'<small>M</small>';
+    if(k<1) raf = requestAnimationFrame(step); };
+  raf = requestAnimationFrame(step);
+}
+function render(v){
+  const r = $('rng'); r.value = v; r.style.setProperty('--p', ((v-MIN)/(MAX-MIN)*100)+'%');
+  tween(v);
+  let n = 0;
+  S.forEach((s,i)=>{
+    const el = $('it'+i), ok = s.pml <= v; if(ok) n++;
+    el.classList.toggle('ok', ok);
+    el.querySelector('.mark').style.left = (v/VMAX*100)+'%';
+    el.querySelector('.badge').innerHTML = ok ? '✓ Pass' : '✕ Fail';
+    const d = v - s.pml;
+    el.querySelector('.room').textContent = ok ? `เหลือช่องว่าง $${fmt0(d)}M` : `เกินเกณฑ์ $${fmt0(-d)}M`;
+  });
+  $('cnt').textContent = n+'/'+S.length;
+  $('arc').style.strokeDashoffset = 276.5*(1-n/S.length);
+  document.querySelectorAll('.preset').forEach(b=>b.classList.toggle('on', +b.dataset.v===+v));
+  const pass = S.filter(s=>s.pml<=v), best = [...pass].sort((a,b)=>a.ced-b.ced)[0];
+  let msg;
+  if(!pass.length) msg = `ที่ระดับ <b>$${fmt0(v)}M</b> ไม่มีโครงสร้างใดผ่านเกณฑ์ ต้องปรับ attachment/limit หรือใช้หลายโครงสร้างร่วมกัน`;
+  else if(best.n==="No Reinsurance") msg = `ที่ระดับ <b>$${fmt0(v)}M</b> ทุกโครงสร้างผ่านเกณฑ์ บริษัทรับความเสี่ยงได้เอง <b>ไม่จำเป็นต้องซื้อประกันภัยต่อ</b> เพื่อคุมความเสียหายปีเลวร้าย`;
+  else msg = `ที่ระดับ <b>$${fmt0(v)}M</b> มี ${pass.length} โครงสร้างที่ผ่านเกณฑ์ (${pass.map(s=>s.n).join(', ')}) · ข้อเสนอ: <b>${best.n}</b> ผ่านเกณฑ์โดยโอนความเสียหายคาดหวังน้อยที่สุด (Net PML250 $${fmt(best.pml)}M)`;
+  $('reco').innerHTML = msg;
+}
+$('rng').addEventListener('input', e=>render(+e.target.value));
+$('presets').addEventListener('click', e=>{ const b = e.target.closest('.preset'); if(b) render(+b.dataset.v); });
+render(1200);
+</script>
+</body>
+</html>
